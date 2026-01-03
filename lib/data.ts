@@ -20,49 +20,21 @@ export const neofetchData: NeofetchData = {
   memory: "1253MiB / 3907MiB",
 };
 
-export const experienceData: ExperienceData = {
-  "Genius Growth AI": [
-    {
-      position: "Junior Staff Developer",
-      period: "Jun 2025 - November 2025",
-      description:
-        "Built landing page website and content management system for educational app, creating user-friendly pages to showcase features and manage content easily. Worked on backend development using Golang, helping build APIs and server functions that support the learning platform.",
-    },
-  ],
-  "Binus Nusantara Computer Club (BNCC)": [
-    {
-      position: "Elite Team Member",
-      period: "Sep 2025 - Present",
-      description:
-        "Selected as part of BNCC's Elite Team, a specialized group representing the organization in hackathon and technology competitions. Participated in hackathon-style projects focusing on real-world problem solving and rapid prototyping. Worked in teams to design, develop, and pitch functional applications within tight deadlines. Applied knowledge in programming, UI/UX, and system design to build complete product concepts.",
-    },
-    {
-      position: "Learning and Training (LnT) C Programming Member",
-      period: "Sep 2025 - Present",
-      description:
-        "Participated in BNCC's Learning and Training (LnT) Regular Class on C Programming, focusing on fundamental programming concepts and problem-solving using the C language. Learned about data types, control structures, functions, arrays, and pointers while implementing structured programming practices through various exercises and projects.",
-    },
-  ],
-  "HIMTI Binus University": [
-    {
-      position: "Staff of Web Development - HISHOT 2025",
-      period: "Apr 2025 - Present",
-      description:
-        "Developed and maintained the official HIMTI website for seminars and workshops during the HISHOT 2025 event. Actively participated as a committee member in organizing and managing the HISHOT 2025 seminar.",
-    },
-    {
-      position: "Technical Division Staff - SESVENT 2025",
-      period: "Oct 2025 - Oct 2025",
-      description:
-        "Assisted the Technical Division team in handling both online and offline operations during SESVENT 2025, ensuring the event ran smoothly from a technical perspective. Helped manage Zoom sessions, including spotlight control, speaker transitions, and simple live documentation. Supported sound and background music setup during offline sessions.",
-    },
-  ],
+export const workExperienceData: ExperienceData = {
   "Bina Nusantara IT Division": [
     {
       position: "Software Engineer",
       period: "Mar 2025 - Present",
       description:
         "Developed advanced search functionality using Elasticsearch (ELK Stack) integrated with ASP.NET 6 backend, enabling efficient data indexing and complex query capabilities. Built comprehensive web application using React with Vite and Tailwind CSS, developing multiple responsive UI components and pages including search interfaces, documentation sections, and other interactive features.",
+    },
+  ],
+  "Genius Growth AI": [
+    {
+      position: "Junior Staff Developer",
+      period: "Jun 2025 - November 2025",
+      description:
+        "Built landing page website and content management system for educational app, creating user-friendly pages to showcase features and manage content easily. Worked on backend development using Golang, helping build APIs and server functions that support the learning platform.",
     },
   ],
   "Self-Employed": [
@@ -79,6 +51,43 @@ export const experienceData: ExperienceData = {
       period: "Jan 2023 - Mar 2023",
       description:
         "Developed the company website using React, Express.js, and MySQL during internship at Yellow Frame Studio. Performed video and photo editing using Adobe Photoshop and Adobe Premiere Pro.",
+    },
+  ],
+};
+
+export const organizationExperienceData: ExperienceData = {
+  "Binus Nusantara Computer Club (BNCC)": [
+    {
+      position: "Elite Team Member",
+      period: "Sep 2025 - Present",
+      description:
+        "Selected as part of BNCC's Elite Team, a specialized group representing the organization in hackathon and technology competitions. Participated in hackathon-style projects focusing on real-world problem solving and rapid prototyping. Worked in teams to design, develop, and pitch functional applications within tight deadlines. Applied knowledge in programming, UI/UX, and system design to build complete product concepts.",
+    },
+    {
+      position: "Learning and Training (LnT) C Programming Member",
+      period: "Sep 2025 - Present",
+      description:
+        "Participated in BNCC's Learning and Training (LnT) Regular Class on C Programming, focusing on fundamental programming concepts and problem-solving using the C language. Learned about data types, control structures, functions, arrays, and pointers while implementing structured programming practices through various exercises and projects.",
+    },
+  ],
+  "HIMTI Binus University": [
+    {
+      position: "Activist of Web Development",
+      period: "Mar 2025 - Present",
+      description:
+        "Completed 3 months of various selections: Sesvent, HIMTI's Internship, and HILET. As a member of Commission 3 at HIMTI (Himpunan Teknik Informatika / Computer Science Association), I work with a team on website development for seminars.",
+    },
+    {
+      position: "Staff of Web Development - HISHOT 2025",
+      period: "Apr 2025 - Present",
+      description:
+        "Developed and maintained the official HIMTI website for seminars and workshops during the HISHOT 2025 event. Actively participated as a committee member in organizing and managing the HISHOT 2025 seminar.",
+    },
+    {
+      position: "Technical Division Staff - SESVENT 2025",
+      period: "Oct 2025 - Oct 2025",
+      description:
+        "Assisted the Technical Division team in handling both online and offline operations during SESVENT 2025, ensuring the event ran smoothly from a technical perspective. Helped manage Zoom sessions, including spotlight control, speaker transitions, and simple live documentation. Supported sound and background music setup during offline sessions.",
     },
   ],
 };
@@ -215,7 +224,8 @@ export const contactData = {
 
 export const certificationsData = [
   {
-    title: "APICTA Awards 2025 - Industry: Inclusivity & Community Service Category",
+    title:
+      "APICTA Awards 2025 - Industry: Inclusivity & Community Service Category",
     organizer: "Asia Pacific ICT Alliance",
     date: "Dec 2025",
     achievement: "First Runner-Up",
@@ -238,7 +248,7 @@ export const certificationsData = [
       "https://socs.binus.ac.id/2025/05/16/mahasiswa-binus-raih-prestasi-di-arkavidia-9-0-itb/",
     certificateFiles: [
       "/Certificate/Finalist_Certificate_Andrian Pratama.pdf",
-      "/Certificate/Most Favorite Team_Certificate_Andrian Pratama.pdf"
+      "/Certificate/Most Favorite Team_Certificate_Andrian Pratama.pdf",
     ],
   },
   {
@@ -251,6 +261,7 @@ export const certificationsData = [
     projectUrl: "https://github.com/VoiceChess",
     articleUrl:
       "https://news.samsung.com/id/semifinalis-sft-2025-angkat-tema-sport-tech-environment",
-    certificateFile: "/Certificate/Sertifikat Finalis Samsung Solve for Tomorrow 2025.pdf",
+    certificateFile:
+      "/Certificate/Sertifikat Finalis Samsung Solve for Tomorrow 2025.pdf",
   },
 ];

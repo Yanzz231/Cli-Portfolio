@@ -1,6 +1,7 @@
 import { CommandHandler } from "./types";
 import {
-  experienceData,
+  workExperienceData,
+  organizationExperienceData,
   techStackData,
   aboutData,
   projectsData,
@@ -26,7 +27,7 @@ function CertificateDownloadAnimation({
   onComplete: () => void;
 }) {
   const [progress, setProgress] = useState(0);
-  const [status, setStatus] = useState<"waiting" | "downloading" | "complete">(
+  const [status, setStatus] = useState<"waiting" | "downloading" | "complete" | "cancelled">(
     "waiting"
   );
   const [userInput, setUserInput] = useState("");
@@ -36,11 +37,11 @@ function CertificateDownloadAnimation({
       if (status !== "waiting") return;
 
       if (e.key === "y" || e.key === "Y") {
-        setUserInput("Y");
+        setUserInput(e.key);
       } else if (e.key === "n" || e.key === "N") {
-        setUserInput("N");
+        setUserInput(e.key);
       } else if (e.key === "Enter" && userInput) {
-        if (userInput === "Y") {
+        if (userInput.toLowerCase() === "y") {
           setStatus("downloading");
           onConfirm();
 
@@ -56,11 +57,15 @@ function CertificateDownloadAnimation({
             });
           }, 150);
         } else {
-          setStatus("complete");
+          setStatus("cancelled");
           setTimeout(() => onComplete(), 100);
         }
       } else if (e.key === "Backspace" && userInput) {
         setUserInput("");
+      } else if (e.ctrlKey && e.key === "c") {
+        e.preventDefault();
+        setStatus("cancelled");
+        setTimeout(() => onComplete(), 100);
       }
     };
 
@@ -113,23 +118,27 @@ function CertificateDownloadAnimation({
     );
   }
 
-  if (status === "complete" && userInput === "N") {
+  if (status === "cancelled") {
     return <div className="text-terminal-error font-mono text-sm">Abort.</div>;
   }
 
-  return (
-    <div className="space-y-1 font-mono text-sm">
-      <div className="text-terminal-fetch-success">
-        Fetched {fileSize} in 2s ({Math.round(parseFloat(fileSize) / 2)}KB/s)
+  if (status === "complete") {
+    return (
+      <div className="space-y-1 font-mono text-sm">
+        <div className="text-terminal-fetch-success">
+          Fetched {fileSize} in 2s ({Math.round(parseFloat(fileSize) / 2)}KB/s)
+        </div>
+        <div className="text-terminal-fetch-success">
+          ✓ Certificate downloaded successfully!
+        </div>
+        <div className="text-terminal-fetch-success">
+          Check your downloads folder for {fileName}
+        </div>
       </div>
-      <div className="text-terminal-fetch-success">
-        ✓ Certificate downloaded successfully!
-      </div>
-      <div className="text-terminal-fetch-success">
-        Check your downloads folder for {fileName}
-      </div>
-    </div>
-  );
+    );
+  }
+
+  return null;
 }
 
 function CVDownloadAnimation({
@@ -140,7 +149,7 @@ function CVDownloadAnimation({
   onComplete: () => void;
 }) {
   const [progress, setProgress] = useState(0);
-  const [status, setStatus] = useState<"waiting" | "downloading" | "complete">(
+  const [status, setStatus] = useState<"waiting" | "downloading" | "complete" | "cancelled">(
     "waiting"
   );
   const [userInput, setUserInput] = useState("");
@@ -150,11 +159,11 @@ function CVDownloadAnimation({
       if (status !== "waiting") return;
 
       if (e.key === "y" || e.key === "Y") {
-        setUserInput("Y");
+        setUserInput(e.key);
       } else if (e.key === "n" || e.key === "N") {
-        setUserInput("N");
+        setUserInput(e.key);
       } else if (e.key === "Enter" && userInput) {
-        if (userInput === "Y") {
+        if (userInput.toLowerCase() === "y") {
           setStatus("downloading");
           onConfirm();
 
@@ -170,11 +179,15 @@ function CVDownloadAnimation({
             });
           }, 150);
         } else {
-          setStatus("complete");
+          setStatus("cancelled");
           setTimeout(() => onComplete(), 100);
         }
       } else if (e.key === "Backspace" && userInput) {
         setUserInput("");
+      } else if (e.ctrlKey && e.key === "c") {
+        e.preventDefault();
+        setStatus("cancelled");
+        setTimeout(() => onComplete(), 100);
       }
     };
 
@@ -224,23 +237,27 @@ function CVDownloadAnimation({
     );
   }
 
-  if (status === "complete" && userInput === "N") {
+  if (status === "cancelled") {
     return <div className="text-terminal-error font-mono text-sm">Abort.</div>;
   }
 
-  return (
-    <div className="space-y-1 font-mono text-sm">
-      <div className="text-terminal-fetch-success">
-        Fetched 245kB in 2s (122kB/s)
+  if (status === "complete") {
+    return (
+      <div className="space-y-1 font-mono text-sm">
+        <div className="text-terminal-fetch-success">
+          Fetched 245kB in 2s (122kB/s)
+        </div>
+        <div className="text-terminal-fetch-success">
+          ✓ CV downloaded successfully!
+        </div>
+        <div className="text-terminal-fetch-success">
+          Check your downloads folder for CV_Andrian_Pratama.pdf
+        </div>
       </div>
-      <div className="text-terminal-fetch-success">
-        ✓ CV downloaded successfully!
-      </div>
-      <div className="text-terminal-fetch-success">
-        Check your downloads folder for CV_Andrian_Pratama.pdf
-      </div>
-    </div>
-  );
+    );
+  }
+
+  return null;
 }
 
 function FileDownloadAnimation({
@@ -255,7 +272,7 @@ function FileDownloadAnimation({
   onComplete: () => void;
 }) {
   const [progress, setProgress] = useState(0);
-  const [status, setStatus] = useState<"waiting" | "downloading" | "complete">(
+  const [status, setStatus] = useState<"waiting" | "downloading" | "complete" | "cancelled">(
     "waiting"
   );
   const [userInput, setUserInput] = useState("");
@@ -265,11 +282,11 @@ function FileDownloadAnimation({
       if (status !== "waiting") return;
 
       if (e.key === "y" || e.key === "Y") {
-        setUserInput("Y");
+        setUserInput(e.key);
       } else if (e.key === "n" || e.key === "N") {
-        setUserInput("N");
+        setUserInput(e.key);
       } else if (e.key === "Enter" && userInput) {
-        if (userInput === "Y") {
+        if (userInput.toLowerCase() === "y") {
           setStatus("downloading");
           onConfirm();
 
@@ -285,11 +302,15 @@ function FileDownloadAnimation({
             });
           }, 150);
         } else {
-          setStatus("complete");
+          setStatus("cancelled");
           setTimeout(() => onComplete(), 100);
         }
       } else if (e.key === "Backspace" && userInput) {
         setUserInput("");
+      } else if (e.ctrlKey && e.key === "c") {
+        e.preventDefault();
+        setStatus("cancelled");
+        setTimeout(() => onComplete(), 100);
       }
     };
 
@@ -335,20 +356,24 @@ function FileDownloadAnimation({
     );
   }
 
-  if (status === "complete" && userInput === "N") {
+  if (status === "cancelled") {
     return <div className="text-terminal-error font-mono text-sm">Abort.</div>;
   }
 
-  return (
-    <div className="space-y-1 font-mono text-sm">
-      <div className="text-terminal-fetch-success">
-        ✓ File downloaded successfully!
+  if (status === "complete") {
+    return (
+      <div className="space-y-1 font-mono text-sm">
+        <div className="text-terminal-fetch-success">
+          ✓ File downloaded successfully!
+        </div>
+        <div className="text-terminal-fetch-success">
+          Check your downloads folder for {fileName}
+        </div>
       </div>
-      <div className="text-terminal-fetch-success">
-        Check your downloads folder for {fileName}
-      </div>
-    </div>
-  );
+    );
+  }
+
+  return null;
 }
 
 export const commands: Record<string, CommandHandler> = {
@@ -399,32 +424,151 @@ export const commands: Record<string, CommandHandler> = {
 
   experience: {
     description: "View my work experience",
-    execute: () => (
-      <div className="space-y-4">
-        <div className="text-terminal-success font-bold mb-3">
-          Work Experience:
-        </div>
-        {Object.entries(experienceData).map(([company, positions]) => (
-          <div key={company}>
-            <div className="text-terminal-accent font-bold">{company}</div>
-            {positions.map((exp, index) => (
-              <div
-                key={index}
-                className="border-l-2 border-terminal-prompt pl-4 ml-4 space-y-1"
-              >
-                <div className="text-terminal-accent font-bold">
-                  {exp.position}
-                </div>
-                <div className="text-terminal-prompt text-sm">{exp.period}</div>
-                <div className="text-terminal-text text-sm mt-2">
-                  {exp.description}
-                </div>
+    execute: (onComplete) => {
+      function ExperienceMenu() {
+        const [selection, setSelection] = useState<string>("");
+        const [selectedOption, setSelectedOption] = useState<
+          "work" | "organization" | null
+        >(null);
+
+        useEffect(() => {
+          const handleKeyPress = (e: KeyboardEvent) => {
+            if (selectedOption) return;
+
+            if (e.key === "1") {
+              setSelection("1");
+            } else if (e.key === "2") {
+              setSelection("2");
+            } else if (e.key === "3") {
+              setSelection("3");
+            } else if (e.key === "Enter" && selection) {
+              if (selection === "1") {
+                setSelectedOption("work");
+                setTimeout(() => {
+                  const terminalEnd = document.querySelector('[data-terminal-end]');
+                  if (terminalEnd) {
+                    terminalEnd.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }, 50);
+                setTimeout(() => {
+                  if (onComplete) onComplete();
+                }, 100);
+              } else if (selection === "2") {
+                setSelectedOption("organization");
+                setTimeout(() => {
+                  const terminalEnd = document.querySelector('[data-terminal-end]');
+                  if (terminalEnd) {
+                    terminalEnd.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }, 50);
+                setTimeout(() => {
+                  if (onComplete) onComplete();
+                }, 100);
+              } else if (selection === "3") {
+                if (onComplete) onComplete();
+              }
+            } else if (e.key === "Backspace" && selection) {
+              setSelection("");
+            } else if (e.ctrlKey && e.key === "c") {
+              e.preventDefault();
+              if (onComplete) onComplete();
+            }
+          };
+
+          window.addEventListener("keydown", handleKeyPress);
+          return () => window.removeEventListener("keydown", handleKeyPress);
+        }, [selection, selectedOption]);
+
+        if (selectedOption === "work") {
+          return (
+            <div className="space-y-4">
+              <div className="text-terminal-success font-bold mb-3">
+                Work Experience:
               </div>
-            ))}
+              {Object.entries(workExperienceData).map(
+                ([company, positions]) => (
+                  <div key={company}>
+                    <div className="text-terminal-accent font-bold">
+                      {company}
+                    </div>
+                    {positions.map((exp, index) => (
+                      <div
+                        key={index}
+                        className="border-l-2 border-terminal-prompt pl-4 ml-4 space-y-1"
+                      >
+                        <div className="text-terminal-accent font-bold">
+                          {exp.position}
+                        </div>
+                        <div className="text-terminal-prompt text-sm">
+                          {exp.period}
+                        </div>
+                        <div className="text-terminal-text text-sm mt-2">
+                          {exp.description}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )
+              )}
+            </div>
+          );
+        }
+
+        if (selectedOption === "organization") {
+          return (
+            <div className="space-y-4">
+              <div className="text-terminal-success font-bold mb-3">
+                Organization Experience:
+              </div>
+              {Object.entries(organizationExperienceData).map(
+                ([org, positions]) => (
+                  <div key={org}>
+                    <div className="text-terminal-accent font-bold">{org}</div>
+                    {positions.map((exp, index) => (
+                      <div
+                        key={index}
+                        className="border-l-2 border-terminal-prompt pl-4 ml-4 space-y-1"
+                      >
+                        <div className="text-terminal-accent font-bold">
+                          {exp.position}
+                        </div>
+                        <div className="text-terminal-prompt text-sm">
+                          {exp.period}
+                        </div>
+                        <div className="text-terminal-text text-sm mt-2">
+                          {exp.description}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )
+              )}
+            </div>
+          );
+        }
+
+        return (
+          <div className="space-y-2 text-terminal-text font-mono text-sm">
+            <div className="text-terminal-success font-bold">
+              Select Experience Type:
+            </div>
+            <div className="ml-4 space-y-1">
+              <div>1. Work Experience</div>
+              <div>2. Organization Experience</div>
+              <div>3. Exit</div>
+            </div>
+            <div className="mt-2 flex items-center gap-1">
+              <span>Enter your choice [1-3]:</span>
+              <span className="text-terminal-success">{selection}</span>
+              <span className="animate-pulse">_</span>
+            </div>
           </div>
-        ))}
-      </div>
-    ),
+        );
+      }
+
+      return <ExperienceMenu />;
+    },
+    requiresInteraction: true,
   },
 
   techstack: {
@@ -677,9 +821,11 @@ export const commands: Record<string, CommandHandler> = {
               setItems(data.items || []);
 
               setTimeout(() => {
-                const terminalEnd = document.querySelector('[data-terminal-end]');
+                const terminalEnd = document.querySelector(
+                  "[data-terminal-end]"
+                );
                 if (terminalEnd) {
-                  terminalEnd.scrollIntoView({ behavior: 'smooth' });
+                  terminalEnd.scrollIntoView({ behavior: "smooth" });
                 }
               }, 50);
             } catch (err) {
@@ -703,13 +849,32 @@ export const commands: Record<string, CommandHandler> = {
         }
 
         const isImageFile = (filename: string) => {
-          const imageExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp', '.svg'];
-          return imageExtensions.some(ext => filename.toLowerCase().endsWith(ext));
+          const imageExtensions = [
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".gif",
+            ".webp",
+            ".bmp",
+            ".svg",
+          ];
+          return imageExtensions.some((ext) =>
+            filename.toLowerCase().endsWith(ext)
+          );
         };
 
         const isDownloadableFile = (filename: string) => {
-          const downloadExtensions = ['.pdf', '.doc', '.docx', '.txt', '.zip', '.rar'];
-          return downloadExtensions.some(ext => filename.toLowerCase().endsWith(ext));
+          const downloadExtensions = [
+            ".pdf",
+            ".doc",
+            ".docx",
+            ".txt",
+            ".zip",
+            ".rar",
+          ];
+          return downloadExtensions.some((ext) =>
+            filename.toLowerCase().endsWith(ext)
+          );
         };
 
         const handleImageClick = (filename: string) => {
@@ -744,7 +909,8 @@ export const commands: Record<string, CommandHandler> = {
           <div className="space-y-1 font-mono text-sm">
             {items.map((item: any, index: number) => {
               const isImage = item.type === "file" && isImageFile(item.name);
-              const isDownloadable = item.type === "file" && isDownloadableFile(item.name);
+              const isDownloadable =
+                item.type === "file" && isDownloadableFile(item.name);
               const isClickable = isImage || isDownloadable;
 
               return (
@@ -797,9 +963,9 @@ export const commands: Record<string, CommandHandler> = {
       function PwdComponent() {
         useEffect(() => {
           setTimeout(() => {
-            const terminalEnd = document.querySelector('[data-terminal-end]');
+            const terminalEnd = document.querySelector("[data-terminal-end]");
             if (terminalEnd) {
-              terminalEnd.scrollIntoView({ behavior: 'smooth' });
+              terminalEnd.scrollIntoView({ behavior: "smooth" });
             }
           }, 50);
         }, []);
@@ -921,6 +1087,7 @@ export function executeCommand(
     }
 
     const { filePath, fileName } = pendingCertificateDownload;
+    pendingCertificateDownload = null;
 
     const handleDownload = async () => {
       try {
@@ -997,7 +1164,7 @@ export function executeCommand(
       return null;
     }
 
-    if (targetDir === "..") {
+    if (targetDir === ".." || targetDir === "../") {
       if (currentDirectory) {
         const parts = currentDirectory.split("/").filter((p) => p);
         parts.pop();
@@ -1037,9 +1204,7 @@ export function executeCommand(
 
               if (!exactMatch) {
                 currentDirectory = baseDir;
-                setError(
-                  `cd: no such file or directory: ${targetDir}`
-                );
+                setError(`cd: no such file or directory: ${targetDir}`);
               }
             } else {
               currentDirectory = baseDir;
@@ -1052,9 +1217,9 @@ export function executeCommand(
           setValidated(true);
 
           setTimeout(() => {
-            const terminalEnd = document.querySelector('[data-terminal-end]');
+            const terminalEnd = document.querySelector("[data-terminal-end]");
             if (terminalEnd) {
-              terminalEnd.scrollIntoView({ behavior: 'smooth' });
+              terminalEnd.scrollIntoView({ behavior: "smooth" });
             }
           }, 50);
         }
