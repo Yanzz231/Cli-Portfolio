@@ -428,7 +428,7 @@ export const commands: Record<string, CommandHandler> = {
       function ExperienceMenu() {
         const [selection, setSelection] = useState<string>("");
         const [selectedOption, setSelectedOption] = useState<
-          "work" | "organization" | null
+          "work" | "organization" | "cancelled" | null
         >(null);
 
         useEffect(() => {
@@ -471,13 +471,20 @@ export const commands: Record<string, CommandHandler> = {
               setSelection("");
             } else if (e.ctrlKey && e.key === "c") {
               e.preventDefault();
-              if (onComplete) onComplete();
+              setSelectedOption("cancelled");
+              setTimeout(() => {
+                if (onComplete) onComplete();
+              }, 10);
             }
           };
 
           window.addEventListener("keydown", handleKeyPress);
           return () => window.removeEventListener("keydown", handleKeyPress);
         }, [selection, selectedOption]);
+
+        if (selectedOption === "cancelled") {
+          return <div className="text-terminal-error font-mono text-sm">Abort.</div>;
+        }
 
         if (selectedOption === "work") {
           return (
