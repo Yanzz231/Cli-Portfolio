@@ -35,7 +35,7 @@ export default function Home() {
                     disabled={isProcessing}
                 />
 
-                <div ref={terminalEndRef} />
+                <div ref={terminalEndRef} data-terminal-end />
             </TerminalBody>
 
             {imageViewer && (

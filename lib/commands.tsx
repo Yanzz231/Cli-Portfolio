@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 let currentDirectory = "";
 let pendingCertificateDownload: { filePath: string; fileName: string } | null =
   null;
+let pendingFileDownload: { filePath: string; fileName: string } | null = null;
 
 function CertificateDownloadAnimation({
   filePath,
@@ -237,6 +238,114 @@ function CVDownloadAnimation({
       </div>
       <div className="text-terminal-fetch-success">
         Check your downloads folder for CV_Andrian_Pratama.pdf
+      </div>
+    </div>
+  );
+}
+
+function FileDownloadAnimation({
+  filePath,
+  fileName,
+  onConfirm,
+  onComplete,
+}: {
+  filePath: string;
+  fileName: string;
+  onConfirm: () => void;
+  onComplete: () => void;
+}) {
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState<"waiting" | "downloading" | "complete">(
+    "waiting"
+  );
+  const [userInput, setUserInput] = useState("");
+
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (status !== "waiting") return;
+
+      if (e.key === "y" || e.key === "Y") {
+        setUserInput("Y");
+      } else if (e.key === "n" || e.key === "N") {
+        setUserInput("N");
+      } else if (e.key === "Enter" && userInput) {
+        if (userInput === "Y") {
+          setStatus("downloading");
+          onConfirm();
+
+          const interval = setInterval(() => {
+            setProgress((prev) => {
+              if (prev >= 100) {
+                clearInterval(interval);
+                setStatus("complete");
+                setTimeout(() => onComplete(), 100);
+                return 100;
+              }
+              return prev + 10;
+            });
+          }, 150);
+        } else {
+          setStatus("complete");
+          setTimeout(() => onComplete(), 100);
+        }
+      } else if (e.key === "Backspace" && userInput) {
+        setUserInput("");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [status, userInput, onConfirm, onComplete]);
+
+  const getProgressBar = () => {
+    const filled = Math.floor(progress / 5);
+    const empty = 20 - filled;
+    return "[" + "█".repeat(filled) + "░".repeat(empty) + "]";
+  };
+
+  if (status === "waiting") {
+    return (
+      <div className="space-y-1 text-terminal-text font-mono text-sm">
+        <div>Reading package lists... Done</div>
+        <div>Building dependency tree... Done</div>
+        <div>Reading state information... Done</div>
+        <div className="mt-2">The following file will be downloaded:</div>
+        <div className="ml-4">{fileName}</div>
+        <div className="mt-2 flex items-center gap-1">
+          <span>Do you want to continue? [Y/n]</span>
+          <span className="text-terminal-success">{userInput}</span>
+          <span className="animate-pulse">_</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === "downloading") {
+    return (
+      <div className="space-y-1 text-terminal-text font-mono text-sm">
+        <div className="mt-2">
+          Get:1 https://andrian-portfolio.dev/files {fileName}
+        </div>
+        <div className="flex items-center gap-2 mt-1">
+          <span>Downloading:</span>
+          <span>{getProgressBar()}</span>
+          <span>{progress}%</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === "complete" && userInput === "N") {
+    return <div className="text-terminal-error font-mono text-sm">Abort.</div>;
+  }
+
+  return (
+    <div className="space-y-1 font-mono text-sm">
+      <div className="text-terminal-fetch-success">
+        ✓ File downloaded successfully!
+      </div>
+      <div className="text-terminal-fetch-success">
+        Check your downloads folder for {fileName}
       </div>
     </div>
   );
@@ -566,6 +675,13 @@ export const commands: Record<string, CommandHandler> = {
               }
 
               setItems(data.items || []);
+
+              setTimeout(() => {
+                const terminalEnd = document.querySelector('[data-terminal-end]');
+                if (terminalEnd) {
+                  terminalEnd.scrollIntoView({ behavior: 'smooth' });
+                }
+              }, 50);
             } catch (err) {
               setError("Failed to read directory");
             }
@@ -591,6 +707,11 @@ export const commands: Record<string, CommandHandler> = {
           return imageExtensions.some(ext => filename.toLowerCase().endsWith(ext));
         };
 
+        const isDownloadableFile = (filename: string) => {
+          const downloadExtensions = ['.pdf', '.doc', '.docx', '.txt', '.zip', '.rar'];
+          return downloadExtensions.some(ext => filename.toLowerCase().endsWith(ext));
+        };
+
         const handleImageClick = (filename: string) => {
           const imagePath = currentDirectory
             ? `/${currentDirectory}/${filename}`
@@ -603,10 +724,28 @@ export const commands: Record<string, CommandHandler> = {
           );
         };
 
+        const handleFileClick = (filename: string) => {
+          const filePath = currentDirectory
+            ? `/${currentDirectory}/${filename}`
+            : `/${filename}`;
+
+          pendingFileDownload = { filePath, fileName: filename };
+
+          setTimeout(() => {
+            window.dispatchEvent(
+              new CustomEvent("terminal:download-file", {
+                detail: { filePath, fileName: filename },
+              })
+            );
+          }, 0);
+        };
+
         return (
           <div className="space-y-1 font-mono text-sm">
             {items.map((item: any, index: number) => {
               const isImage = item.type === "file" && isImageFile(item.name);
+              const isDownloadable = item.type === "file" && isDownloadableFile(item.name);
+              const isClickable = isImage || isDownloadable;
 
               return (
                 <div key={index} className="flex gap-4">
@@ -614,11 +753,14 @@ export const commands: Record<string, CommandHandler> = {
                     className={
                       item.type === "folder"
                         ? "text-blue-400 font-bold"
-                        : isImage
+                        : isClickable
                         ? "text-terminal-accent cursor-pointer hover:underline"
                         : "text-terminal-text"
                     }
-                    onClick={() => isImage && handleImageClick(item.name)}
+                    onClick={() => {
+                      if (isImage) handleImageClick(item.name);
+                      else if (isDownloadable) handleFileClick(item.name);
+                    }}
                   >
                     {item.type === "folder" ? `${item.name}/` : item.name}
                   </span>
@@ -651,11 +793,26 @@ export const commands: Record<string, CommandHandler> = {
 
   pwd: {
     description: "Print working directory",
-    execute: () => (
-      <div className="text-terminal-text font-mono text-sm">
-        ~/{currentDirectory || ""}
-      </div>
-    ),
+    execute: () => {
+      function PwdComponent() {
+        useEffect(() => {
+          setTimeout(() => {
+            const terminalEnd = document.querySelector('[data-terminal-end]');
+            if (terminalEnd) {
+              terminalEnd.scrollIntoView({ behavior: 'smooth' });
+            }
+          }, 50);
+        }, []);
+
+        return (
+          <div className="text-terminal-text font-mono text-sm">
+            ~/{currentDirectory || ""}
+          </div>
+        );
+      }
+
+      return <PwdComponent />;
+    },
   },
 
   cv: {
@@ -792,6 +949,41 @@ export function executeCommand(
     );
   }
 
+  if (resolvedCommand === "__download-file__") {
+    if (!pendingFileDownload) {
+      return null;
+    }
+
+    const { filePath, fileName } = pendingFileDownload;
+    pendingFileDownload = null;
+
+    const handleDownload = async () => {
+      try {
+        const response = await fetch(encodeURI(filePath));
+        if (!response.ok) return;
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error("Download error:", error);
+      }
+    };
+
+    return (
+      <FileDownloadAnimation
+        filePath={filePath}
+        fileName={fileName}
+        onConfirm={handleDownload}
+        onComplete={onComplete || (() => {})}
+      />
+    );
+  }
+
   if (resolvedCommand === "cd") {
     if (args.length === 0) {
       currentDirectory = "";
@@ -858,6 +1050,13 @@ export function executeCommand(
             setError(`cd: no such file or directory: ${targetDir}`);
           }
           setValidated(true);
+
+          setTimeout(() => {
+            const terminalEnd = document.querySelector('[data-terminal-end]');
+            if (terminalEnd) {
+              terminalEnd.scrollIntoView({ behavior: 'smooth' });
+            }
+          }, 50);
         }
 
         validateDirectory();

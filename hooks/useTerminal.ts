@@ -46,12 +46,34 @@ export function useTerminal() {
 			setImageViewer({ imagePath, fileName });
 		};
 
+		const handleDownloadFile = () => {
+			setIsProcessing(true);
+
+			const onComplete = () => {
+				setIsProcessing(false);
+			};
+
+			const output = executeCommand('__download-file__', onComplete);
+
+			setOutputs(prev => [
+				...prev,
+				{
+					command: '',
+					output,
+					timestamp: Date.now(),
+					directory: getCurrentDirectory(),
+				},
+			]);
+		};
+
 		window.addEventListener('terminal:download-certificate', handleDownloadCertificate);
 		window.addEventListener('terminal:open-image', handleOpenImage);
+		window.addEventListener('terminal:download-file', handleDownloadFile);
 
 		return () => {
 			window.removeEventListener('terminal:download-certificate', handleDownloadCertificate);
 			window.removeEventListener('terminal:open-image', handleOpenImage);
+			window.removeEventListener('terminal:download-file', handleDownloadFile);
 		};
 	}, []);
 

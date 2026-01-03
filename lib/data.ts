@@ -139,6 +139,37 @@ What I do:
 
 export const projectsData = [
   {
+    name: "VoiceChess - Accessible Chess for Visually Impaired Players",
+    description:
+      "Mobile chess application designed specifically for visually impaired players, providing full accessibility through voice control and VoiceOver/TalkBack integration. Features AI-powered chess board scanning using MobileNetV3 (99% accuracy), voice-controlled gameplay with Gemini AI, 72 interactive lessons and puzzles, and chess analysis tools powered by Stockfish engine.",
+    tech: [
+      "React Native",
+      "React.js",
+      "Tailwind CSS",
+      "HTML",
+      "CSS",
+      "FastAPI",
+      "Redis",
+      "Supabase",
+      "MySQL",
+      "Go",
+    ],
+    link: "https://github.com/VoiceChess",
+  },
+  {
+    name: "NOGA - Smart Food Analysis",
+    description:
+      "Health-focused mobile app that empowers users to make informed dietary choices through AI-powered food analysis. Features AI-generated summaries of ingredient health impacts, allergen alerts and health risk warnings, ingredient scanning via OCR and manual entry support. Backend powered by FastAPI integrating Gemini API for deep food analysis.",
+    tech: [
+      "React Native",
+      "TypeScript",
+      "Tailwind CSS",
+      "FastAPI",
+      "Express.js",
+    ],
+    link: "https://github.com/NNOGAA",
+  },
+  {
     name: "Tabi (Tangan Bicara)",
     description:
       "An interactive web-based learning platform for American Sign Language (ASL) developed as part of the Human Computer Interaction (HCI) course project.",
