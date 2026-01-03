@@ -955,6 +955,7 @@ export const commands: Record<string, CommandHandler> = {
         </div>
       );
     },
+    requiresInteraction: true,
   },
 
   pwd: {
@@ -1154,6 +1155,9 @@ export function executeCommand(
   if (resolvedCommand === "cd") {
     if (args.length === 0) {
       currentDirectory = "";
+      setTimeout(() => {
+        if (onComplete) onComplete();
+      }, 10);
       return null;
     }
 
@@ -1161,25 +1165,36 @@ export function executeCommand(
 
     if (targetDir === "~" || targetDir === "/") {
       currentDirectory = "";
+      setTimeout(() => {
+        if (onComplete) onComplete();
+      }, 10);
       return null;
     }
 
-    if (targetDir === ".." || targetDir === "../") {
+    if (targetDir.startsWith("..")) {
       if (currentDirectory) {
         const parts = currentDirectory.split("/").filter((p) => p);
-        parts.pop();
+
+        // Count how many ".." are in the path
+        const upLevels = targetDir.split("/").filter(p => p === "..").length;
+
+        // Go up that many levels
+        for (let i = 0; i < upLevels && parts.length > 0; i++) {
+          parts.pop();
+        }
+
         currentDirectory = parts.join("/");
       }
+
+      setTimeout(() => {
+        if (onComplete) onComplete();
+      }, 10);
+
       return null;
     }
 
     const baseDir = currentDirectory;
-
-    if (baseDir) {
-      currentDirectory = `${baseDir}/${targetDir}`;
-    } else {
-      currentDirectory = targetDir;
-    }
+    const newDir = baseDir ? `${baseDir}/${targetDir}` : targetDir;
 
     function CdHandler() {
       const [validated, setValidated] = useState(false);
@@ -1202,19 +1217,22 @@ export function executeCommand(
                 (folder: string) => folder === targetDir
               );
 
-              if (!exactMatch) {
-                currentDirectory = baseDir;
+              if (exactMatch) {
+                currentDirectory = newDir;
+              } else {
                 setError(`cd: no such file or directory: ${targetDir}`);
               }
             } else {
-              currentDirectory = baseDir;
               setError(`cd: no such file or directory: ${targetDir}`);
             }
           } catch (err) {
-            currentDirectory = baseDir;
             setError(`cd: no such file or directory: ${targetDir}`);
           }
           setValidated(true);
+
+          setTimeout(() => {
+            if (onComplete) onComplete();
+          }, 10);
 
           setTimeout(() => {
             const terminalEnd = document.querySelector("[data-terminal-end]");
