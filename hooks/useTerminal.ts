@@ -8,6 +8,7 @@ export function useTerminal() {
 	const [input, setInput] = useState('');
 	const [outputs, setOutputs] = useState<CommandOutput[]>([]);
 	const [isProcessing, setIsProcessing] = useState(false);
+	const [imageViewer, setImageViewer] = useState<{ imagePath: string; fileName: string } | null>(null);
 	const terminalEndRef = useRef<HTMLDivElement>(null);
 
 	const scrollToBottom = useCallback(() => {
@@ -39,10 +40,18 @@ export function useTerminal() {
 			]);
 		};
 
+		const handleOpenImage = (event: Event) => {
+			const customEvent = event as CustomEvent;
+			const { imagePath, fileName } = customEvent.detail;
+			setImageViewer({ imagePath, fileName });
+		};
+
 		window.addEventListener('terminal:download-certificate', handleDownloadCertificate);
+		window.addEventListener('terminal:open-image', handleOpenImage);
 
 		return () => {
 			window.removeEventListener('terminal:download-certificate', handleDownloadCertificate);
+			window.removeEventListener('terminal:open-image', handleOpenImage);
 		};
 	}, []);
 
@@ -104,6 +113,10 @@ export function useTerminal() {
 		}
 	}, []);
 
+	const closeImageViewer = useCallback(() => {
+		setImageViewer(null);
+	}, []);
+
 	return {
 		input,
 		setInput,
@@ -111,5 +124,7 @@ export function useTerminal() {
 		isProcessing,
 		handleCommand,
 		terminalEndRef,
+		imageViewer,
+		closeImageViewer,
 	};
 }

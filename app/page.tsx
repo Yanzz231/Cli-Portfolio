@@ -2,10 +2,10 @@
 
 import { useRef } from 'react';
 import { useTerminal } from '@/hooks/useTerminal';
-import { TerminalHeader, TerminalBody, TerminalInput, CommandOutput, Neofetch } from '@/components';
+import { TerminalHeader, TerminalBody, TerminalInput, CommandOutput, Neofetch, ImageViewer } from '@/components';
 
 export default function Home() {
-    const { input, setInput, outputs, isProcessing, handleCommand, terminalEndRef } = useTerminal();
+    const { input, setInput, outputs, isProcessing, handleCommand, terminalEndRef, imageViewer, closeImageViewer } = useTerminal();
     const inputRef = useRef<HTMLInputElement>(null);
 
     const handleClick = () => {
@@ -37,6 +37,14 @@ export default function Home() {
 
                 <div ref={terminalEndRef} />
             </TerminalBody>
+
+            {imageViewer && (
+                <ImageViewer
+                    imagePath={imageViewer.imagePath}
+                    fileName={imageViewer.fileName}
+                    onClose={closeImageViewer}
+                />
+            )}
         </div>
     );
 }
