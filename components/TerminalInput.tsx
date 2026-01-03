@@ -67,7 +67,11 @@ export const TerminalInput = forwardRef<HTMLInputElement, TerminalInputProps>(
         }, [value, folderSuggestions]);
 
         const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'c' && e.ctrlKey) {
+                e.preventDefault();
+                onChange('');
+                onSubmit('');
+            } else if (e.key === 'Enter') {
                 e.preventDefault();
                 addToHistory(value);
                 onSubmit(value);

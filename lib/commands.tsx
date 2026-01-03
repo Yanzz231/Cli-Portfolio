@@ -1103,7 +1103,7 @@ export function executeCommand(
         link.click();
         window.URL.revokeObjectURL(url);
       } catch (error) {
-        console.error("Download error:", error);
+        return;
       }
     };
 
@@ -1138,7 +1138,7 @@ export function executeCommand(
         link.click();
         window.URL.revokeObjectURL(url);
       } catch (error) {
-        console.error("Download error:", error);
+        return;
       }
     };
 
@@ -1174,11 +1174,8 @@ export function executeCommand(
     if (targetDir.startsWith("..")) {
       if (currentDirectory) {
         const parts = currentDirectory.split("/").filter((p) => p);
-
-        // Count how many ".." are in the path
         const upLevels = targetDir.split("/").filter(p => p === "..").length;
 
-        // Go up that many levels
         for (let i = 0; i < upLevels && parts.length > 0; i++) {
           parts.pop();
         }
