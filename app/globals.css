@@ -1,49 +1,60 @@
 @import "tailwindcss";
 
 :root {
-	--background: #2C001E;
-	--foreground: #ffffff;
-	--terminal-bg: #300A24;
-	--terminal-text: #ffffff;
-	--terminal-prompt: #4E9A06;
-	--terminal-error: #CC0000;
-	--terminal-success: #4E9A06;
-	--terminal-accent: #E95420;
-	--terminal-header: #2C001E;
+  --background: #2c001e;
+  --foreground: #ffffff;
+  --terminal-bg: #300a24;
+  --terminal-text: #ffffff;
+  --terminal-prompt: #4e9a06;
+  --terminal-error: #cc0000;
+  --terminal-success: #4e9a06;
+  --terminal-fetch-success: #26a269;
+  --terminal-accent: #e95420;
+  --terminal-header: #2c001e;
 }
 
 @theme inline {
-	--color-background: var(--background);
-	--color-foreground: var(--foreground);
-	--color-terminal-bg: var(--terminal-bg);
-	--color-terminal-text: var(--terminal-text);
-	--color-terminal-prompt: var(--terminal-prompt);
-	--color-terminal-error: var(--terminal-error);
-	--color-terminal-success: var(--terminal-success);
-	--color-terminal-accent: var(--terminal-accent);
-	--color-terminal-header: var(--terminal-header);
-	--font-mono: var(--font-cascadia-mono);
-	
-	--animate-cursor-blink: blink 1.06s step-end infinite;
-	--animate-typing: typing 0.03s linear;
-	
-	@keyframes blink {
-		0%, 100% { opacity: 1; }
-		50% { opacity: 0; }
-	}
-	
-	@keyframes typing {
-		from { opacity: 0; }
-		to { opacity: 1; }
-	}
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-terminal-bg: var(--terminal-bg);
+  --color-terminal-text: var(--terminal-text);
+  --color-terminal-prompt: var(--terminal-prompt);
+  --color-terminal-error: var(--terminal-error);
+  --color-terminal-success: var(--terminal-success);
+  --color-terminal-fetch-success: var(--terminal-fetch-success);
+  --color-terminal-accent: var(--terminal-accent);
+  --color-terminal-header: var(--terminal-header);
+  --font-mono: var(--font-cascadia-mono);
+
+  --animate-cursor-blink: blink 1.06s step-end infinite;
+  --animate-typing: typing 0.03s linear;
+
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes typing {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 }
 
 * {
-	box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
-	background: var(--background);
-	color: var(--foreground);
-	font-family: var(--font-cascadia-mono);
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-cascadia-mono);
 }

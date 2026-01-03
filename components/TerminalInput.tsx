@@ -1,9 +1,9 @@
 'use client';
 
-import { KeyboardEvent, useEffect, forwardRef, useMemo } from 'react';
+import { KeyboardEvent, useEffect, forwardRef, useMemo, useState } from 'react';
 import { useCommandHistory } from '@/hooks/useCommandHistory';
 import { PromptLine } from '@/components';
-import { commands } from '@/lib/commands';
+import { commands, getFolderSuggestions } from '@/lib/commands';
 
 interface TerminalInputProps {
     value: string;
@@ -15,6 +15,7 @@ interface TerminalInputProps {
 export const TerminalInput = forwardRef<HTMLInputElement, TerminalInputProps>(
     function TerminalInput({ value, onChange, onSubmit, disabled }, ref) {
         const { addToHistory, navigateHistory } = useCommandHistory();
+        const [folderSuggestions, setFolderSuggestions] = useState<string[]>([]);
 
         useEffect(() => {
             if (ref && 'current' in ref) {
@@ -22,32 +23,62 @@ export const TerminalInput = forwardRef<HTMLInputElement, TerminalInputProps>(
             }
         }, [ref]);
 
-        // Find matching command for autocomplete suggestion
-        const suggestion = useMemo(() => {
-            if (!value || value.includes(' ')) return '';
+        useEffect(() => {
+            const fetchFolders = async () => {
+                if (value.toLowerCase().startsWith('cd ')) {
+                    const folders = await getFolderSuggestions();
+                    setFolderSuggestions(folders);
+                }
+            };
+
+            fetchFolders();
+        }, [value]);
+
+        const { suggestion, matchedFolder } = useMemo(() => {
+            if (value.toLowerCase().startsWith('cd ')) {
+                const inputAfterCd = value.slice(3);
+
+                if (!inputAfterCd) return { suggestion: '', matchedFolder: null };
+
+                const match = folderSuggestions.find(folder =>
+                    folder.toLowerCase().startsWith(inputAfterCd.toLowerCase()) &&
+                    folder.toLowerCase() !== inputAfterCd.toLowerCase()
+                );
+
+                return {
+                    suggestion: match ? match.slice(inputAfterCd.length) : '',
+                    matchedFolder: match || null
+                };
+            }
+
+            if (!value || value.includes(' ')) return { suggestion: '', matchedFolder: null };
 
             const lowerValue = value.toLowerCase();
             const availableCommands = Object.keys(commands);
 
-            // Find first command that starts with current input
             const match = availableCommands.find(cmd =>
                 cmd.startsWith(lowerValue) && cmd !== lowerValue
             );
 
-            return match ? match.slice(value.length) : '';
-        }, [value]);
+            return {
+                suggestion: match ? match.slice(value.length) : '',
+                matchedFolder: null
+            };
+        }, [value, folderSuggestions]);
 
         const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                if (value.trim()) {
-                    addToHistory(value);
-                    onSubmit(value);
-                }
+                addToHistory(value);
+                onSubmit(value);
             } else if (e.key === 'Tab') {
                 e.preventDefault();
                 if (suggestion) {
-                    onChange(value + suggestion);
+                    if (matchedFolder && value.toLowerCase().startsWith('cd ')) {
+                        onChange('cd ' + matchedFolder);
+                    } else {
+                        onChange(value + suggestion);
+                    }
                 }
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
@@ -63,6 +94,10 @@ export const TerminalInput = forwardRef<HTMLInputElement, TerminalInputProps>(
                 }
             }
         };
+
+        if (disabled) {
+            return null;
+        }
 
         return (
             <div className="flex items-center gap-2 font-mono text-sm">

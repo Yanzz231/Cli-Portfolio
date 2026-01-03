@@ -9,27 +9,63 @@ import {
 } from "./data";
 import { useState, useEffect } from "react";
 
-function CVDownloadAnimation({ onConfirm }: { onConfirm: () => void }) {
+let currentDirectory = "";
+let pendingCertificateDownload: { filePath: string; fileName: string } | null =
+  null;
+
+function CertificateDownloadAnimation({
+  filePath,
+  fileName,
+  onConfirm,
+  onComplete,
+}: {
+  filePath: string;
+  fileName: string;
+  onConfirm: () => void;
+  onComplete: () => void;
+}) {
   const [progress, setProgress] = useState(0);
-  const [status, setStatus] = useState<"downloading" | "complete">("downloading");
+  const [status, setStatus] = useState<"waiting" | "downloading" | "complete">(
+    "waiting"
+  );
+  const [userInput, setUserInput] = useState("");
 
   useEffect(() => {
-    // Start download immediately
-    onConfirm();
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (status !== "waiting") return;
 
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
+      if (e.key === "y" || e.key === "Y") {
+        setUserInput("Y");
+      } else if (e.key === "n" || e.key === "N") {
+        setUserInput("N");
+      } else if (e.key === "Enter" && userInput) {
+        if (userInput === "Y") {
+          setStatus("downloading");
+          onConfirm();
+
+          const interval = setInterval(() => {
+            setProgress((prev) => {
+              if (prev >= 100) {
+                clearInterval(interval);
+                setStatus("complete");
+                setTimeout(() => onComplete(), 100);
+                return 100;
+              }
+              return prev + 10;
+            });
+          }, 150);
+        } else {
           setStatus("complete");
-          return 100;
+          setTimeout(() => onComplete(), 100);
         }
-        return prev + 10;
-      });
-    }, 150);
+      } else if (e.key === "Backspace" && userInput) {
+        setUserInput("");
+      }
+    };
 
-    return () => clearInterval(interval);
-  }, [onConfirm]);
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [status, userInput, onConfirm, onComplete]);
 
   const getProgressBar = () => {
     const filled = Math.floor(progress / 5);
@@ -37,32 +73,171 @@ function CVDownloadAnimation({ onConfirm }: { onConfirm: () => void }) {
     return "[" + "█".repeat(filled) + "░".repeat(empty) + "]";
   };
 
-  return (
-    <div className="space-y-1 text-terminal-text font-mono text-sm">
-      <div>Reading package lists... Done</div>
-      <div>Building dependency tree... Done</div>
-      <div>Reading state information... Done</div>
-      <div className="mt-2">
-        Get:1 https://andrian-portfolio.dev/files CV_Andrian_Pratama.pdf [245kB]
-      </div>
-      <div className="flex items-center gap-2 mt-1">
-        <span>Downloading:</span>
-        <span>{getProgressBar()}</span>
-        <span>{progress}%</span>
-      </div>
-      {status === "complete" && (
-        <div className="mt-2 space-y-1">
-          <div className="text-terminal-success">
-            Fetched 245kB in 2s (122kB/s)
-          </div>
-          <div className="text-terminal-success">
-            ✓ CV downloaded successfully!
-          </div>
-          <div className="text-terminal-text">
-            Check your downloads folder for CV_Andrian_Pratama.pdf
-          </div>
+  const fileSize = fileName.endsWith(".pdf") ? "1.2MB" : "245KB";
+
+  if (status === "waiting") {
+    return (
+      <div className="space-y-1 text-terminal-text font-mono text-sm">
+        <div>Reading package lists... Done</div>
+        <div>Building dependency tree... Done</div>
+        <div>Reading state information... Done</div>
+        <div className="mt-2">The following file will be downloaded:</div>
+        <div className="ml-4">
+          {fileName} ({fileSize})
         </div>
-      )}
+        <div className="mt-2">
+          After this operation, {fileSize} will be downloaded.
+        </div>
+        <div className="mt-2 flex items-center gap-1">
+          <span>Do you want to continue? [Y/n]</span>
+          <span className="text-terminal-success">{userInput}</span>
+          <span className="animate-pulse">_</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === "downloading") {
+    return (
+      <div className="space-y-1 text-terminal-text font-mono text-sm">
+        <div className="mt-2">
+          Get:1 https://andrian-portfolio.dev/files {fileName} [{fileSize}]
+        </div>
+        <div className="flex items-center gap-2 mt-1">
+          <span>Downloading:</span>
+          <span>{getProgressBar()}</span>
+          <span>{progress}%</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === "complete" && userInput === "N") {
+    return <div className="text-terminal-error font-mono text-sm">Abort.</div>;
+  }
+
+  return (
+    <div className="space-y-1 font-mono text-sm">
+      <div className="text-terminal-fetch-success">
+        Fetched {fileSize} in 2s ({Math.round(parseFloat(fileSize) / 2)}KB/s)
+      </div>
+      <div className="text-terminal-fetch-success">
+        ✓ Certificate downloaded successfully!
+      </div>
+      <div className="text-terminal-fetch-success">
+        Check your downloads folder for {fileName}
+      </div>
+    </div>
+  );
+}
+
+function CVDownloadAnimation({
+  onConfirm,
+  onComplete,
+}: {
+  onConfirm: () => void;
+  onComplete: () => void;
+}) {
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState<"waiting" | "downloading" | "complete">(
+    "waiting"
+  );
+  const [userInput, setUserInput] = useState("");
+
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (status !== "waiting") return;
+
+      if (e.key === "y" || e.key === "Y") {
+        setUserInput("Y");
+      } else if (e.key === "n" || e.key === "N") {
+        setUserInput("N");
+      } else if (e.key === "Enter" && userInput) {
+        if (userInput === "Y") {
+          setStatus("downloading");
+          onConfirm();
+
+          const interval = setInterval(() => {
+            setProgress((prev) => {
+              if (prev >= 100) {
+                clearInterval(interval);
+                setStatus("complete");
+                setTimeout(() => onComplete(), 100);
+                return 100;
+              }
+              return prev + 10;
+            });
+          }, 150);
+        } else {
+          setStatus("complete");
+          setTimeout(() => onComplete(), 100);
+        }
+      } else if (e.key === "Backspace" && userInput) {
+        setUserInput("");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [status, userInput, onConfirm, onComplete]);
+
+  const getProgressBar = () => {
+    const filled = Math.floor(progress / 5);
+    const empty = 20 - filled;
+    return "[" + "█".repeat(filled) + "░".repeat(empty) + "]";
+  };
+
+  if (status === "waiting") {
+    return (
+      <div className="space-y-1 text-terminal-text font-mono text-sm">
+        <div>Reading package lists... Done</div>
+        <div>Building dependency tree... Done</div>
+        <div>Reading state information... Done</div>
+        <div className="mt-2">The following package will be downloaded:</div>
+        <div className="ml-4">CV_Andrian_Pratama.pdf (245kB)</div>
+        <div className="mt-2">
+          After this operation, 245kB will be downloaded.
+        </div>
+        <div className="mt-2 flex items-center gap-1">
+          <span>Do you want to continue? [Y/n]</span>
+          <span className="text-terminal-success">{userInput}</span>
+          <span className="animate-pulse">_</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === "downloading") {
+    return (
+      <div className="space-y-1 text-terminal-text font-mono text-sm">
+        <div className="mt-2">
+          Get:1 https://andrian-portfolio.dev/files CV_Andrian_Pratama.pdf
+          [245kB]
+        </div>
+        <div className="flex items-center gap-2 mt-1">
+          <span>Downloading:</span>
+          <span>{getProgressBar()}</span>
+          <span>{progress}%</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === "complete" && userInput === "N") {
+    return <div className="text-terminal-error font-mono text-sm">Abort.</div>;
+  }
+
+  return (
+    <div className="space-y-1 font-mono text-sm">
+      <div className="text-terminal-fetch-success">
+        Fetched 245kB in 2s (122kB/s)
+      </div>
+      <div className="text-terminal-fetch-success">
+        ✓ CV downloaded successfully!
+      </div>
+      <div className="text-terminal-fetch-success">
+        Check your downloads folder for CV_Andrian_Pratama.pdf
+      </div>
     </div>
   );
 }
@@ -70,21 +245,29 @@ function CVDownloadAnimation({ onConfirm }: { onConfirm: () => void }) {
 export const commands: Record<string, CommandHandler> = {
   help: {
     description: "List all available commands",
-    execute: () => (
-      <div className="space-y-1">
-        <div className="text-terminal-success font-bold mb-3">
-          Available Commands:
-        </div>
-        {Object.entries(commands).map(([cmd, handler]) => (
-          <div key={cmd} className="flex gap-2">
-            <span className="text-terminal-accent font-bold min-w-[120px]">
-              {cmd}
-            </span>
-            <span className="text-terminal-text">{handler.description}</span>
+    execute: () => {
+      const excludedCommands = ["ls", "cd", "pwd"];
+
+      return (
+        <div className="space-y-1">
+          <div className="text-terminal-success font-bold mb-3">
+            Available Commands:
           </div>
-        ))}
-      </div>
-    ),
+          {Object.entries(commands)
+            .filter(([cmd]) => !excludedCommands.includes(cmd))
+            .map(([cmd, handler]) => (
+              <div key={cmd} className="flex gap-2">
+                <span className="text-terminal-accent font-bold min-w-[120px]">
+                  {cmd}
+                </span>
+                <span className="text-terminal-text">
+                  {handler.description}
+                </span>
+              </div>
+            ))}
+        </div>
+      );
+    },
   },
 
   clear: {
@@ -272,54 +455,212 @@ export const commands: Record<string, CommandHandler> = {
 
   achievements: {
     description: "View my achievements and certifications",
-    execute: () => (
-      <div className="space-y-4">
-        <div className="text-terminal-success font-bold mb-3">
-          Achievements & Certifications:
-        </div>
-        {certificationsData.map((cert, index) => (
-          <div key={index} className="space-y-2">
-            <div className="text-terminal-accent font-bold">{cert.title}</div>
-            <div className="text-terminal-prompt text-sm">
-              {cert.organizer} • {cert.date}
-            </div>
-            <div className="text-terminal-success text-sm font-bold">
-              🏆 {cert.achievement}
-            </div>
-            <div className="text-terminal-text text-sm">
-              {cert.description}
-            </div>
-            <div className="flex gap-4 text-sm">
-              {cert.projectUrl && (
-                <a
-                  href={cert.projectUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-terminal-success hover:underline"
-                >
-                  View Project →
-                </a>
-              )}
-              {cert.articleUrl && (
-                <a
-                  href={cert.articleUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-terminal-success hover:underline"
-                >
-                  Read Article →
-                </a>
-              )}
-            </div>
+    execute: () => {
+      const handleCertificateClick = (filePath: string, fileName: string) => {
+        pendingCertificateDownload = { filePath, fileName };
+        window.dispatchEvent(
+          new CustomEvent("terminal:download-certificate", {
+            detail: { filePath, fileName },
+          })
+        );
+      };
+
+      return (
+        <div className="space-y-4">
+          <div className="text-terminal-success font-bold mb-3">
+            Achievements & Certifications:
           </div>
-        ))}
+          {certificationsData.map((cert, index) => (
+            <div key={index} className="space-y-2">
+              <div className="text-terminal-accent font-bold">{cert.title}</div>
+              <div className="text-terminal-prompt text-sm">
+                {cert.organizer} • {cert.date}
+              </div>
+              <div className="text-terminal-success text-sm font-bold">
+                🏆 {cert.achievement}
+              </div>
+              <div className="text-terminal-text text-sm">
+                {cert.description}
+              </div>
+              <div className="flex gap-4 text-sm flex-wrap">
+                {cert.projectUrl && (
+                  <a
+                    href={cert.projectUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-terminal-success hover:underline"
+                  >
+                    View Project →
+                  </a>
+                )}
+                {cert.articleUrl && (
+                  <a
+                    href={cert.articleUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-terminal-success hover:underline"
+                  >
+                    Read Article →
+                  </a>
+                )}
+                {(cert as any).certificateFile && (
+                  <button
+                    onClick={() => {
+                      const fileName = (cert as any).certificateFile
+                        .split("/")
+                        .pop();
+                      handleCertificateClick(
+                        (cert as any).certificateFile,
+                        fileName
+                      );
+                    }}
+                    className="text-terminal-accent hover:underline cursor-pointer"
+                  >
+                    Download Certificate →
+                  </button>
+                )}
+                {(cert as any).certificateFiles &&
+                  (cert as any).certificateFiles.map(
+                    (file: string, idx: number) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          const fileName = file.split("/").pop();
+                          handleCertificateClick(
+                            file,
+                            fileName || "certificate.pdf"
+                          );
+                        }}
+                        className="text-terminal-accent hover:underline cursor-pointer"
+                      >
+                        Download Certificate {idx + 1} →
+                      </button>
+                    )
+                  )}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    },
+  },
+
+  ls: {
+    description: "List directory contents",
+    execute: () => {
+      function LsComponent() {
+        const [items, setItems] = useState<any[]>([]);
+        const [error, setError] = useState<string | null>(null);
+
+        useEffect(() => {
+          async function fetchFiles() {
+            try {
+              const response = await fetch(
+                `/api/files?dir=${encodeURIComponent(currentDirectory)}`
+              );
+              const data = await response.json();
+
+              if (!response.ok) {
+                setError(data.error || "Failed to read directory");
+                return;
+              }
+
+              setItems(data.items || []);
+            } catch (err) {
+              setError("Failed to read directory");
+            }
+          }
+
+          fetchFiles();
+        }, []);
+
+        if (error) {
+          return (
+            <div className="text-terminal-error font-mono text-sm">
+              ls: cannot access '{currentDirectory || "~"}': {error}
+            </div>
+          );
+        }
+
+        if (items.length === 0) {
+          return null;
+        }
+
+        const isImageFile = (filename: string) => {
+          const imageExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp', '.svg'];
+          return imageExtensions.some(ext => filename.toLowerCase().endsWith(ext));
+        };
+
+        const handleImageClick = (filename: string) => {
+          const imagePath = currentDirectory
+            ? `/${currentDirectory}/${filename}`
+            : `/${filename}`;
+
+          window.dispatchEvent(
+            new CustomEvent("terminal:open-image", {
+              detail: { imagePath, fileName: filename },
+            })
+          );
+        };
+
+        return (
+          <div className="space-y-1 font-mono text-sm">
+            {items.map((item: any, index: number) => {
+              const isImage = item.type === "file" && isImageFile(item.name);
+
+              return (
+                <div key={index} className="flex gap-4">
+                  <span
+                    className={
+                      item.type === "folder"
+                        ? "text-blue-400 font-bold"
+                        : isImage
+                        ? "text-terminal-accent cursor-pointer hover:underline"
+                        : "text-terminal-text"
+                    }
+                    onClick={() => isImage && handleImageClick(item.name)}
+                  >
+                    {item.type === "folder" ? `${item.name}/` : item.name}
+                  </span>
+                  {item.size && (
+                    <span className="text-terminal-prompt text-xs">
+                      {item.size}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        );
+      }
+
+      return <LsComponent />;
+    },
+  },
+
+  cd: {
+    description: "Change directory",
+    execute: () => {
+      return (
+        <div className="text-terminal-text font-mono text-sm">
+          Use: cd &lt;directory&gt;
+        </div>
+      );
+    },
+  },
+
+  pwd: {
+    description: "Print working directory",
+    execute: () => (
+      <div className="text-terminal-text font-mono text-sm">
+        ~/{currentDirectory || ""}
       </div>
     ),
   },
 
   cv: {
     description: "Download my CV/Resume",
-    execute: () => {
+    execute: (onComplete) => {
       const handleDownload = () => {
         const link = document.createElement("a");
         link.href = "/Resume.pdf";
@@ -327,13 +668,20 @@ export const commands: Record<string, CommandHandler> = {
         link.click();
       };
 
-      return <CVDownloadAnimation onConfirm={handleDownload} />;
+      return (
+        <CVDownloadAnimation
+          onConfirm={handleDownload}
+          onComplete={onComplete || (() => {})}
+        />
+      );
     },
+    requiresInteraction: true,
   },
 };
 
 const commandAliases: Record<string, string> = {
   cls: "clear",
+  dir: "ls",
 };
 
 function findSimilarCommands(input: string): string[] {
@@ -398,14 +746,139 @@ export function parseCommand(input: string): {
   return { command, args };
 }
 
-export function executeCommand(input: string): React.ReactNode {
-  const { command } = parseCommand(input);
+export function executeCommand(
+  input: string,
+  onComplete?: () => void
+): React.ReactNode {
+  const { command, args } = parseCommand(input);
 
   if (!command) {
     return null;
   }
 
   const resolvedCommand = commandAliases[command] || command;
+
+  if (resolvedCommand === "__download-cert__") {
+    if (!pendingCertificateDownload) {
+      return null;
+    }
+
+    const { filePath, fileName } = pendingCertificateDownload;
+
+    const handleDownload = async () => {
+      try {
+        const response = await fetch(encodeURI(filePath));
+        if (!response.ok) return;
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error("Download error:", error);
+      }
+    };
+
+    return (
+      <CertificateDownloadAnimation
+        filePath={filePath}
+        fileName={fileName}
+        onConfirm={handleDownload}
+        onComplete={onComplete || (() => {})}
+      />
+    );
+  }
+
+  if (resolvedCommand === "cd") {
+    if (args.length === 0) {
+      currentDirectory = "";
+      return null;
+    }
+
+    const targetDir = input.trim().slice(3).trim() || args[0];
+
+    if (targetDir === "~" || targetDir === "/") {
+      currentDirectory = "";
+      return null;
+    }
+
+    if (targetDir === "..") {
+      if (currentDirectory) {
+        const parts = currentDirectory.split("/").filter((p) => p);
+        parts.pop();
+        currentDirectory = parts.join("/");
+      }
+      return null;
+    }
+
+    const baseDir = currentDirectory;
+
+    if (baseDir) {
+      currentDirectory = `${baseDir}/${targetDir}`;
+    } else {
+      currentDirectory = targetDir;
+    }
+
+    function CdHandler() {
+      const [validated, setValidated] = useState(false);
+      const [error, setError] = useState<string | null>(null);
+
+      useEffect(() => {
+        async function validateDirectory() {
+          try {
+            const response = await fetch(
+              `/api/files?dir=${encodeURIComponent(baseDir)}`
+            );
+            const data = await response.json();
+
+            if (response.ok && data.items) {
+              const folders = data.items
+                .filter((item: any) => item.type === "folder")
+                .map((item: any) => item.name);
+
+              const exactMatch = folders.find(
+                (folder: string) => folder === targetDir
+              );
+
+              if (!exactMatch) {
+                currentDirectory = baseDir;
+                setError(
+                  `cd: no such file or directory: ${targetDir}`
+                );
+              }
+            } else {
+              currentDirectory = baseDir;
+              setError(`cd: no such file or directory: ${targetDir}`);
+            }
+          } catch (err) {
+            currentDirectory = baseDir;
+            setError(`cd: no such file or directory: ${targetDir}`);
+          }
+          setValidated(true);
+        }
+
+        validateDirectory();
+      }, []);
+
+      if (!validated) {
+        return null;
+      }
+
+      if (error) {
+        return (
+          <div className="text-terminal-error font-mono text-sm">{error}</div>
+        );
+      }
+
+      return null;
+    }
+
+    return <CdHandler />;
+  }
+
   const handler = commands[resolvedCommand];
 
   if (!handler) {
@@ -414,16 +887,8 @@ export function executeCommand(input: string): React.ReactNode {
     if (suggestions.length > 0) {
       return (
         <div>
-          <div className="text-terminal-error">command not found: {command}</div>
-          <div className="text-terminal-text mt-1">
-            Did you mean:{" "}
-            {suggestions.map((suggestion, index) => (
-              <span key={suggestion}>
-                <span className="text-terminal-success">{suggestion}</span>
-                {index < suggestions.length - 1 && ", "}
-              </span>
-            ))}
-            ?
+          <div className="text-terminal-error">
+            command not found: {command}
           </div>
         </div>
       );
@@ -434,5 +899,27 @@ export function executeCommand(input: string): React.ReactNode {
     );
   }
 
-  return handler.execute();
+  return handler.execute(onComplete);
+}
+
+export function getCurrentDirectory(): string {
+  return currentDirectory;
+}
+
+export async function getFolderSuggestions(): Promise<string[]> {
+  try {
+    const response = await fetch(
+      `/api/files?dir=${encodeURIComponent(currentDirectory)}`
+    );
+    const data = await response.json();
+
+    if (response.ok && data.items) {
+      return data.items
+        .filter((item: any) => item.type === "folder")
+        .map((item: any) => item.name);
+    }
+  } catch (err) {
+    return [];
+  }
+  return [];
 }

@@ -2,11 +2,13 @@ export interface CommandOutput {
 	command: string;
 	output: React.ReactNode;
 	timestamp: number;
+	directory: string;
 }
 
 export interface CommandHandler {
 	description: string;
-	execute: () => React.ReactNode;
+	execute: (onComplete?: () => void) => React.ReactNode;
+	requiresInteraction?: boolean;
 }
 
 export interface NeofetchData {

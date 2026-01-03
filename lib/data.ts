@@ -184,6 +184,18 @@ export const contactData = {
 
 export const certificationsData = [
   {
+    title: "APICTA Awards 2025 - Industry: Inclusivity & Community Service Category",
+    organizer: "Asia Pacific ICT Alliance",
+    date: "Dec 2025",
+    achievement: "First Runner-Up",
+    description:
+      "Achieved First Runner-Up position at APICTA Awards 2025 in the Industry: Inclusivity & Community Service Category. APICTA Awards is one of the most prestigious ICT innovation competitions in the Asia Pacific region, recognizing excellence in technology solutions that promote inclusivity and community service.",
+    projectUrl: "https://github.com/VoiceChess",
+    articleUrl:
+      "https://global.turingcerts.com/en/co/cert?email=bakti.jabar%40binus.edu&hash=oQbAfMeR1p",
+    certificateFile: "/Certificate/APICTA.png",
+  },
+  {
     title: "Arkavidia 9.0 - IT Competition",
     organizer: "Institut Teknologi Bandung (ITB)",
     date: "May 2025",
@@ -193,6 +205,10 @@ export const certificationsData = [
     projectUrl: "https://github.com/NNOGAA",
     articleUrl:
       "https://socs.binus.ac.id/2025/05/16/mahasiswa-binus-raih-prestasi-di-arkavidia-9-0-itb/",
+    certificateFiles: [
+      "/Certificate/Finalist_Certificate_Andrian Pratama.pdf",
+      "/Certificate/Most Favorite Team_Certificate_Andrian Pratama.pdf"
+    ],
   },
   {
     title: "Samsung Solve for Tomorrow 2025",
@@ -204,5 +220,6 @@ export const certificationsData = [
     projectUrl: "https://github.com/VoiceChess",
     articleUrl:
       "https://news.samsung.com/id/semifinalis-sft-2025-angkat-tema-sport-tech-environment",
+    certificateFile: "/Certificate/Sertifikat Finalis Samsung Solve for Tomorrow 2025.pdf",
   },
 ];

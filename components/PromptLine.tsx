@@ -1,12 +1,16 @@
 "use client";
 
 import { neofetchData } from "@/lib/data";
+import { getCurrentDirectory } from "@/lib/commands";
 
 interface PromptLineProps {
   showPrompt?: boolean;
 }
 
 export function PromptLine({ showPrompt = true }: PromptLineProps) {
+  const currentDir = getCurrentDirectory();
+  const displayPath = currentDir ? `~/${currentDir}` : "~";
+
   return (
     <div className="flex items-center font-mono text-sm shrink-0">
       {showPrompt && (
@@ -15,7 +19,7 @@ export function PromptLine({ showPrompt = true }: PromptLineProps) {
             {neofetchData.username}@{neofetchData.hostname}
           </span>
           <span className="text-terminal-text">:</span>
-          <span className="text-blue-400 font-bold">~</span>
+          <span className="text-blue-400 font-bold">{displayPath}</span>
           <span className="text-terminal-text font-bold">$</span>
         </>
       )}
