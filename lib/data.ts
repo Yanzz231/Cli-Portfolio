@@ -23,7 +23,7 @@ export const neofetchData: NeofetchData = {
 export const workExperienceData: ExperienceData = {
   "Bina Nusantara IT Division": [
     {
-      position: "Software Engineer",
+      position: "Application Architect",
       period: "Mar 2025 - Present",
       description:
         "Developed advanced search functionality using Elasticsearch (ELK Stack) integrated with ASP.NET 6 backend, enabling efficient data indexing and complex query capabilities. Built comprehensive web application using React with Vite and Tailwind CSS, developing multiple responsive UI components and pages including search interfaces, documentation sections, and other interactive features.",
