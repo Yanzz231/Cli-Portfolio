@@ -14,6 +14,14 @@ export const metadata: Metadata = {
     applicationName: "Andrian Pratama Portfolio",
     referrer: "origin-when-cross-origin",
     category: "technology",
+    alternates: {
+        canonical: "https://drian.my.id",
+        languages: {
+            'en-US': 'https://drian.my.id',
+            'id-ID': 'https://drian.my.id',
+            'x-default': 'https://drian.my.id',
+        },
+    },
     keywords: [
         "Andrian Pratama",
         "Full Stack Developer",
@@ -34,8 +42,21 @@ export const metadata: Metadata = {
         "ASP.NET",
         "Jakarta Developer",
         "Indonesian Developer",
-        "BNCC",
-        "HIMTI"
+        "Developer Indonesia",
+        "Programmer Indonesia",
+        "Web Developer Jakarta",
+        "Software Engineer Jakarta",
+        "Full Stack Developer Indonesia",
+        "BINUS Developer",
+        "BNCC Developer",
+        "HIMTI BINUS",
+        "IT Developer Jakarta",
+        "Tech Talent Indonesia",
+        "Indonesian Tech Professional",
+        "Jakarta Software Engineer",
+        "Indonesia Web Development",
+        "Southeast Asia Developer",
+        "ASEAN Developer"
     ],
     authors: [{ name: "Andrian Pratama", url: "https://github.com/Yanzz231" }],
     creator: "Andrian Pratama",
@@ -75,7 +96,7 @@ export const metadata: Metadata = {
         },
     },
     verification: {
-        google: "your-google-verification-code",
+        google: "google49b65a6fa7624a45",
     },
 };
 
@@ -98,7 +119,13 @@ export default function RootLayout({
         "jobTitle": "Software Engineer",
         "worksFor": {
             "@type": "Organization",
-            "name": "Bina Nusantara IT Division"
+            "name": "Bina Nusantara IT Division",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Jakarta",
+                "addressRegion": "DKI Jakarta",
+                "addressCountry": "ID"
+            }
         },
         "alumniOf": {
             "@type": "EducationalOrganization",
@@ -132,10 +159,37 @@ export default function RootLayout({
         ],
         "description": "Computer Science student at Bina Nusantara University specializing in fullstack development, cloud infrastructure, and end-to-end IT project management. Currently working as Software Engineer at Bina Nusantara IT Division, developing advanced search functionality using Elasticsearch and building modern web applications with React and ASP.NET.",
         "email": "andrianpratama843@gmail.com",
+        "nationality": {
+            "@type": "Country",
+            "name": "Indonesia"
+        },
+        "workLocation": {
+            "@type": "Place",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Jakarta",
+                "addressRegion": "DKI Jakarta",
+                "addressCountry": "ID"
+            }
+        },
         "address": {
             "@type": "PostalAddress",
             "addressLocality": "Jakarta",
-            "addressCountry": "Indonesia"
+            "addressRegion": "DKI Jakarta",
+            "addressCountry": "ID"
+        },
+        "homeLocation": {
+            "@type": "Place",
+            "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": "-6.2088",
+                "longitude": "106.8456"
+            },
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Jakarta",
+                "addressCountry": "Indonesia"
+            }
         }
     };
 
