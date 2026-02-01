@@ -8,8 +8,12 @@ const cascadiaMono = Cascadia_Mono({
 });
 
 export const metadata: Metadata = {
+    metadataBase: new URL('https://drian.my.id'),
     title: "Andrian Pratama - Full Stack Developer & Software Engineer",
     description: "Computer Science student at Bina Nusantara University specializing in fullstack development (React, Next.js, Node.js, Golang), cloud infrastructure (AWS, Docker, Kubernetes), and end-to-end IT project management. Software Engineer at Bina Nusantara IT Division with experience in Elasticsearch, ASP.NET, and modern web technologies.",
+    applicationName: "Andrian Pratama Portfolio",
+    referrer: "origin-when-cross-origin",
+    category: "technology",
     keywords: [
         "Andrian Pratama",
         "Full Stack Developer",
@@ -39,13 +43,13 @@ export const metadata: Metadata = {
     openGraph: {
         type: "website",
         locale: "en_US",
-        url: "https://andrian-portfolio.dev",
+        url: "https://drian.my.id",
         siteName: "Andrian Pratama Portfolio",
         title: "Andrian Pratama - Full Stack Developer & Software Engineer",
         description: "Computer Science student at Bina Nusantara University specializing in fullstack development, cloud infrastructure, and IT project management. Experienced in React, Next.js, Node.js, Golang, AWS, and modern web technologies.",
         images: [
             {
-                url: "/og-image.png",
+                url: "https://drian.my.id/og-image.png",
                 width: 1200,
                 height: 630,
                 alt: "Andrian Pratama - Full Stack Developer",
@@ -56,7 +60,7 @@ export const metadata: Metadata = {
         card: "summary_large_image",
         title: "Andrian Pratama - Full Stack Developer & Software Engineer",
         description: "Computer Science student at Bina Nusantara University specializing in fullstack development, cloud infrastructure, and IT project management.",
-        images: ["/og-image.png"],
+        images: ["https://drian.my.id/og-image.png"],
         creator: "@iyanmikasa",
     },
     robots: {
@@ -84,8 +88,8 @@ export default function RootLayout({
         "@context": "https://schema.org",
         "@type": "Person",
         "name": "Andrian Pratama",
-        "url": "https://andrian-portfolio.dev",
-        "image": "https://andrian-portfolio.dev/profile.jpg",
+        "url": "https://drian.my.id",
+        "image": "https://drian.my.id/profile.jpg",
         "sameAs": [
             "https://github.com/Yanzz231",
             "https://linkedin.com/in/andrian-pratama-27795431b",
@@ -174,7 +178,7 @@ export default function RootLayout({
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
                 />
-                <link rel="canonical" href="https://andrian-portfolio.dev" />
+                <link rel="canonical" href="https://drian.my.id" />
             </head>
             <body className={`${cascadiaMono.variable} antialiased`}>
                 {children}
