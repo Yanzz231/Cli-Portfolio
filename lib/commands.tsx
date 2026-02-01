@@ -14,6 +14,7 @@ let currentDirectory = "";
 let pendingCertificateDownload: { filePath: string; fileName: string } | null =
   null;
 let pendingFileDownload: { filePath: string; fileName: string } | null = null;
+let certificateDownloadQueue: { filePath: string; fileName: string }[] = [];
 
 function CertificateDownloadAnimation({
   filePath,
@@ -50,7 +51,18 @@ function CertificateDownloadAnimation({
               if (prev >= 100) {
                 clearInterval(interval);
                 setStatus("complete");
-                setTimeout(() => onComplete(), 100);
+                setTimeout(() => {
+                  onComplete();
+                  if (certificateDownloadQueue.length > 0) {
+                    const next = certificateDownloadQueue.shift()!;
+                    pendingCertificateDownload = next;
+                    window.dispatchEvent(
+                      new CustomEvent("terminal:download-certificate", {
+                        detail: next,
+                      })
+                    );
+                  }
+                }, 100);
                 return 100;
               }
               return prev + 10;
@@ -58,6 +70,7 @@ function CertificateDownloadAnimation({
           }, 150);
         } else {
           setStatus("cancelled");
+          certificateDownloadQueue = [];
           setTimeout(() => onComplete(), 100);
         }
       } else if (e.key === "Backspace" && userInput) {
@@ -65,6 +78,7 @@ function CertificateDownloadAnimation({
       } else if (e.ctrlKey && e.key === "c") {
         e.preventDefault();
         setStatus("cancelled");
+        certificateDownloadQueue = [];
         setTimeout(() => onComplete(), 100);
       }
     };
@@ -725,6 +739,19 @@ export const commands: Record<string, CommandHandler> = {
         );
       };
 
+      const handleMultipleCertificates = (files: string[]) => {
+        if (files.length === 0) return;
+
+        certificateDownloadQueue = files.slice(1).map(file => ({
+          filePath: file,
+          fileName: file.split("/").pop() || "certificate.pdf"
+        }));
+
+        const firstFile = files[0];
+        const firstName = firstFile.split("/").pop() || "certificate.pdf";
+        handleCertificateClick(firstFile, firstName);
+      };
+
       return (
         <div className="space-y-4">
           <div className="text-terminal-success font-bold mb-3">
@@ -779,24 +806,16 @@ export const commands: Record<string, CommandHandler> = {
                     Download Certificate →
                   </button>
                 )}
-                {(cert as any).certificateFiles &&
-                  (cert as any).certificateFiles.map(
-                    (file: string, idx: number) => (
-                      <button
-                        key={idx}
-                        onClick={() => {
-                          const fileName = file.split("/").pop();
-                          handleCertificateClick(
-                            file,
-                            fileName || "certificate.pdf"
-                          );
-                        }}
-                        className="text-terminal-accent hover:underline cursor-pointer"
-                      >
-                        Download Certificate {idx + 1} →
-                      </button>
-                    )
-                  )}
+                {(cert as any).certificateFiles && (
+                  <button
+                    onClick={() => {
+                      handleMultipleCertificates((cert as any).certificateFiles);
+                    }}
+                    className="text-terminal-accent hover:underline cursor-pointer"
+                  >
+                    Download Certificates ({(cert as any).certificateFiles.length} files) →
+                  </button>
+                )}
               </div>
             </div>
           ))}

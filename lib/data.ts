@@ -216,7 +216,7 @@ export const projectsData = [
 ];
 
 export const contactData = {
-  email: "andrianpratama231@gmail.com",
+  email: "andrianpratama843@gmail.com",
   github: "github.com/Yanzz231",
   linkedin: "linkedin.com/in/andrian-pratama-27795431b",
   instagram: "instagram.com/iyanmikasa",
