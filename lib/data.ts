@@ -23,8 +23,14 @@ export const neofetchData: NeofetchData = {
 export const workExperienceData: ExperienceData = {
   "Bina Nusantara IT Division": [
     {
+      position: "Junior Software Engineer",
+      period: "Mar 2026 - Present",
+      description:
+        "Junior Software Engineer at SSG5 Cluster 2, assisting in developing and maintaining the core application \"E-Desk\", a system used concurrently by thousands of users.",
+    },
+    {
       position: "Application Architect",
-      period: "Mar 2025 - Present",
+      period: "Mar 2025 - Mar 2026",
       description:
         "Developed advanced search functionality using Elasticsearch (ELK Stack) integrated with ASP.NET 6 backend, enabling efficient data indexing and complex query capabilities. Built comprehensive web application using React with Vite and Tailwind CSS, developing multiple responsive UI components and pages including search interfaces, documentation sections, and other interactive features.",
     },
